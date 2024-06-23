@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.container-box {
+    border-width: 8px;
+    border-top-color: white;
+    border-left-color: white;
+    border-bottom-color: black;
+    border-right-color: black;
+    background-color: rgb(203 213 225);
+}
+
+.timein-box {
+    border-width: 4px;
+    border-top-color: white;
+    border-left-color: white;
+    border-bottom-color: black;
+    border-right-color: black;
+    background-color: rgb(187 247 208);
+}

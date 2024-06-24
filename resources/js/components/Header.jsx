@@ -51,15 +51,15 @@ function Header() {
             <div className="h-full w-[90%] mx-auto">
                 <div className="flex justify-between">
                     <div className="inline p-3">
-                        <Link to="/dashboard" className="p-3 text-2xl text-white text-decoration-none font-bold hover:!text-blue-500 hover:!bg-white rounded-xl" > 
+                        <Link to="/dashboard" className="p-3 text-xl text-white text-decoration-none font-semibold hover:!text-blue-500 hover:!bg-white rounded-xl" > 
                             <i className="fas fa-home-lg"></i> Dashboard 
                         </Link>
                         <span className={`${userDetails.role === "admin" ? "visible" : "hidden"} text-2xl text-white`}> | </span>
-                        <Link to="/employees" className={`${userDetails.role === "admin" ? "visible" : "hidden"} p-3 text-2xl text-white text-decoration-none font-bold hover:!text-blue-500 hover:!bg-white rounded-xl`} > 
+                        <Link to="/employees" className={`${userDetails.role === "admin" ? "visible" : "hidden"} p-3 text-xl text-white text-decoration-none font-semibold hover:!text-blue-500 hover:!bg-white rounded-xl`} > 
                             <i className="fas fa-users"></i> Employees 
                         </Link>
                         <span className={`${userDetails.role === "admin" ? "visible" : "hidden"} text-2xl text-white`}> | </span>
-                        <Link to="/employee-logs" className={`${userDetails.role === "admin" ? "visible" : "hidden"} p-3 text-2xl text-white text-decoration-none font-bold hover:!text-blue-500 hover:!bg-white rounded-xl`} > 
+                        <Link to="/employee-logs" className={`${userDetails.role === "admin" ? "visible" : "hidden"} p-3 text-xl text-white text-decoration-none font-semibold hover:!text-blue-500 hover:!bg-white rounded-xl`} > 
                             <i className="fas fa-history"></i> Logs 
                         </Link>
                     </div>

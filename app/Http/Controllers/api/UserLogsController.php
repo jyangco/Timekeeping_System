@@ -20,10 +20,21 @@ class UserLogsController extends Controller
     //GET USER LOG TODAY
     public function getuserlogtoday() {
         $date_today = Carbon::now()->format('F d, Y');
+        $user_log = DB::table('userlogs')
+            ->select('*')
+            ->where('date', '=', $date_today)
+            ->join('employees', 'employees.employee_id', '=', 'userlogs.employee_id')
+            ->get();
+        return $user_log;
+    }
+
+    //GET CURRENT USER'S LOG TODAY
+    public function getuserlog() {
+        $date_today = Carbon::now()->format('F d, Y');
         $user = Auth::user();
         $user_log = DB::table('userlogs')
             ->select('*')
-            ->where('employee_id', '=', $user->username)
+            ->where('userlogs.employee_id', '=', $user->username)
             ->where('date', '=', $date_today)
             ->first();
         return $user_log;
@@ -41,7 +52,10 @@ class UserLogsController extends Controller
         }
         DB::beginTransaction();
         try {
-            $userlog = Userlog::select("*")->where('date', '=', $request->date)->get();
+            $userlog = Userlog::select("userlogs.*", "employees.employee_id", "employees.employee_fname", "employees.employee_minitial", "employees.employee_lname", "employees.employee_division", "employees.employee_unit", "employees.schedule")
+                ->where('date', '=', $request->date)
+                ->join('employees', 'employees.employee_id', '=', 'userlogs.employee_id')
+                ->get();
             DB::commit();
             return response()->json([
                 'message' => 'Success', 

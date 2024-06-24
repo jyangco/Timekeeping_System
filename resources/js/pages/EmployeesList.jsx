@@ -1,27 +1,122 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { Link } from 'react-router-dom'
 
 import http from '../components/Config'
 import Layout from '../components/Layout'
 
 function EmployeesList(){
+    const [ emps, setEmps ] = useState([])
+    const [ nameInput, setNameInput ] = useState("")
+    const [ searchResult, setSearchResults ] = useState([])
+
+    const fetchEmployeeDetails = async() => {
+        try {
+            http.get('/api/getallemployees').then(response => {
+                setEmps(response.data)
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchEmployeeDetails()
+    }, [])
+
+    const handleSearch = (e) => {
+        e.preventDefault()
+        setTimeout(() => {
+            setSearchResults(
+                emps.filter(
+                    emp => emp.employee_fname.toLowerCase().includes(nameInput.toLowerCase()) ||
+                    emp.employee_lname.toLowerCase().includes(nameInput.toLowerCase()) ||
+                    emp.employee_fname.toLowerCase() + " " + emp.employee_lname.toLowerCase() == nameInput.toLowerCase() ||
+                    emp.employee_lname.toLowerCase() + " " + emp.employee_fname.toLowerCase() == nameInput.toLowerCase()
+                )
+            )
+        }, 5)
+    } 
+
+    const handleClear = (e) => {
+        e.preventDefault()
+        setSearchResults(emps)
+        setNameInput("")
+    } 
+
+    var view = ""
+        if (searchResult == "" && nameInput.length == 0) {
+            view = (
+                <tbody>
+                    {emps.map((value, ndx) => 
+                        <tr key={ndx}>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} </td>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_division} </td>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_unit} </td>
+                            <td className="border-2 border-black p-1 text-xl text-center"> {value.schedule} </td>
+                        </tr>
+                    )}
+                </tbody>
+            )
+        } else if (nameInput.length != 0 && searchResult == "") {
+            view = (
+                <tbody>
+                    <tr className='hover:cursor-pointer'>
+                        <td className="border-2 border-black text-center p-5 text-4xl" colSpan={6}> NO MATCH FOUND </td>
+                    </tr>
+                </tbody>
+            )
+        } else {
+            view = (
+                <tbody>
+                    {searchResult.map((value,ndx) => 
+                        <tr key={ndx}>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} </td>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_division} </td>
+                            <td className="border-2 border-black p-1 text-xl"> {value.employee_unit} </td>
+                            <td className="border-2 border-black p-1 text-xl text-center"> {value.schedule} </td>
+                        </tr>
+                    )}
+                </tbody>
+            )
+        }
+
     return(
         <Layout>
-            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[80%] mx-auto p-5">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Itaque quis ipsam ab veritatis unde in et assumenda non laborum magni. Facere excepturi rerum quia aliquam accusamus obcaecati a velit sed?
-                Perferendis, et eaque soluta facere pariatur minima est magni corrupti cum voluptas cumque tempore corporis repudiandae ipsam labore illo animi. Dolorem assumenda nostrum mollitia magni voluptatibus qui libero harum earum!
-                Fugiat ipsum aspernatur pariatur amet obcaecati ullam, molestiae modi magnam? Adipisci vero doloremque voluptas fugit, cupiditate quibusdam omnis ullam, repellat neque, optio eveniet hic explicabo dolorum molestias distinctio sint vitae!
-                Illum hic atque, voluptate natus veritatis necessitatibus aperiam fugit labore qui sint! Beatae, libero? Non repudiandae ea magnam doloribus. Doloremque iste temporibus magni culpa id atque tempore laudantium eum. Id.
-                Cupiditate hic nobis, cum voluptate amet ex totam adipisci in distinctio atque tempora iste laboriosam ipsa assumenda ipsum rem quaerat, animi culpa incidunt architecto eum ducimus! Ipsa reprehenderit porro eius.
-                Vitae quidem voluptates cum nihil, sed doloribus quas tenetur, rerum, nemo illum atque saepe unde suscipit nobis asperiores nesciunt fugiat ut! Nobis fugiat neque veniam obcaecati ut, aperiam incidunt dicta.
-                Similique aut cumque tempora asperiores vitae consequuntur fuga molestiae nostrum quaerat assumenda voluptas vero, quasi ipsam doloremque doloribus nemo nisi deleniti. Impedit nesciunt fuga qui, quos dolorum rerum consequuntur autem!
-                Temporibus animi accusantium magni tempore, voluptatum nesciunt sint ut iste illo consequatur ducimus pariatur. Aperiam tempora consectetur numquam, at nesciunt unde rem harum dolore culpa ratione nihil quis qui? Commodi.
-                Porro eaque consequatur, eligendi suscipit blanditiis obcaecati quidem. Facilis ipsam nesciunt itaque ad quidem ratione earum, officia aliquid! Incidunt ipsa inventore tempore magnam libero aut dolore debitis ab deleniti dolorum!
-                Pariatur quam dolore, vero porro numquam quisquam? Perspiciatis ducimus temporibus consequuntur commodi! Blanditiis pariatur beatae laudantium. Fugit est modi facere, veniam ratione, corporis ipsa quasi sequi minus eos quidem ea.
-                Possimus repellat praesentium, modi, vel alias similique temporibus ea ipsa, neque qui deleniti ducimus ullam quo? Ratione provident ad laboriosam quasi, corrupti id doloribus, ipsam numquam tempore eaque praesentium libero!
-                Odit veniam doloremque nihil dolorem, neque magni repellat perferendis aperiam delectus autem in, quo consequuntur beatae recusandae excepturi, blanditiis libero molestiae maiores sed? Repudiandae, optio ea placeat minima magnam voluptatibus.
-                Porro dolorem at praesentium suscipit numquam facere modi sint? Optio possimus quia mollitia tenetur omnis minus doloremque explicabo voluptatem distinctio numquam officia, accusantium pariatur recusandae error eligendi ad laboriosam beatae.
-                Placeat laboriosam iusto dicta, omnis laborum similique rerum cum esse magni iste iure officia mollitia nesciunt, consequatur minus voluptate perferendis beatae molestias porro aspernatur. Molestias facere velit tenetur debitis tempore?
-                Minima doloremque aliquid veritatis exercitationem ab velit. Atque, porro modi dicta quos officiis blanditiis vitae facilis ipsam tempora consequatur nobis asperiores inventore fugiat aperiam dolorum maiores. Corporis nesciunt aut quasi.
+            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[90%] mx-auto p-5">
+                <div className="flex justify-between font-sans font-bold pb-10">
+                    <div className="text-4xl"> Employee List </div>
+                    <div className="text-2xl">
+                        <div className="flex p-2 w-[100%]">
+                            <button className='rounded-l-lg bg-slate-500 text-white text-lg px-2' onClick={handleClear}>
+                                <i className="far fa-sync"></i>
+                            </button>
+                            <input
+                                className='border-2 w-[90%] border-black px-1 text-lg'
+                                type="text"
+                                placeholder='Search ... '
+                                value={nameInput}
+                                onChange={(e) => setNameInput(e.target.value.toLowerCase()) }
+                            />
+                            <button className='rounded-r-lg bg-slate-500 text-white text-lg px-2' onClick={handleSearch}>
+                                <i className="far fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <Link to={'/employees/new'} className="bg-slate-500 p-2 text-xl text-white">
+                        <i className="fas fa-plus"></i>
+                    </Link>
+                </div>
+                <table className="table w-full">
+                    <thead>
+                        <tr>
+                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Name </th>
+                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Divison </th>
+                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Unit </th>
+                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Schedule </th>
+                        </tr>
+                    </thead>
+                    {view}
+                </table>
             </div>
         </Layout>
     )

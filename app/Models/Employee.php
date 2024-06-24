@@ -14,6 +14,7 @@ class Employee extends Model
         'employee_fname',
         'employee_minitial',
         'employee_lname',
+        'employee_suffix',
         'employee_division',
         'employee_unit'
     ];

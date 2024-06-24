@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('employee_fname');
             $table->string('employee_minitial');
             $table->string('employee_lname');
+            $table->string('employee_suffix')->default("");
             $table->string('employee_division');
             $table->string('employee_unit');
             $table->string('schedule');

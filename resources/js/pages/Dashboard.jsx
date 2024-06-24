@@ -13,7 +13,7 @@ function Dashboard() {
 
     const fetchUserLogToday = async() => {
         try {
-            const response = await http.get('/api/getuserlogtoday')
+            const response = await http.get('/api/getuserlog')
             setUserLogs(response.data)
         } catch (error) {
             console.error(error)
@@ -68,18 +68,77 @@ function Dashboard() {
                         </div>
                     </div>
                     <div className="w-[60%] border-l-2 bordet-bold p-3 relative">
-                        {userDetails.schedule !== moment(new Date()).format('dddd') ? 
+                        {userDetails.schedule != moment(new Date()).format('dddd') ? 
                             <div className="absolute font-semibold text-7xl top-[30%] text-center">
                                 Today is not your WFH Schedule
                             </div>
-                        : userlogs === "" ?
+                        : userlogs == "" ?
                             <div className="contents">
                                 <div className="text-4xl text-center font-semibold py-5"> <i className="fas fa-alarm-exclamation"></i> You have no Time In today </div> 
                                 <button onClick={setMorningTimeIn} className="hover:shadow-2xl timein-box text-4xl p-5 font-bold absolute bottom-0 right-0">
                                     <i className="fas fa-alarm-clock"></i> TIME IN 
                                 </button>
                             </div>
-                        : ""
+                        : userlogs != "" && userlogs.morning_timein != "" && userlogs.morning_timeout == "" ?
+                        <div className="contents">
+                            <div className="flex justify-center text-5xl text-blue-500">
+                                <i className="fas fa-user-clock"></i>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> Your Time In today is </span> <span> {userlogs.morning_timein} </span>
+                            </div> 
+                            <button  className="hover:shadow-2xl timein-box text-4xl p-5 font-bold absolute bottom-0 right-0">
+                                <i className="fas fa-mug"></i> START BREAK
+                            </button>
+                        </div> : userlogs != "" && userlogs.morning_timein != "" && userlogs.morning_timeout != "" && userlogs.afternoon_timein == "" ?
+                        <div className="contents">
+                            <div className="flex justify-center text-5xl text-blue-500">
+                                <i className="fas fa-user-clock"></i>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> Your Time In today is </span> <span> {userlogs.morning_timein} </span>
+                            </div> 
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> You started your break in </span> <span> {userlogs.morning_timeout} </span>
+                            </div>
+                            <button  className="hover:shadow-2xl timeout-box text-4xl p-5 font-bold absolute bottom-0 right-0">
+                                <i className="fas fa-mug"></i> END BREAK
+                            </button>
+                        </div> : userlogs != "" && userlogs.morning_timein != "" && userlogs.morning_timeout != "" && userlogs.afternoon_timein != "" ?
+                            <div className="contents">
+                            <div className="flex justify-center text-5xl text-blue-500">
+                                <i className="fas fa-user-clock"></i>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> Your Time In today is </span> <span> {userlogs.morning_timein} </span>
+                            </div> 
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> You started your break in </span> <span> {userlogs.morning_timeout} </span>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> You ended your break in </span> <span> {userlogs.afternoon_timeout} </span>
+                            </div>
+                            <button  className="hover:shadow-2xl timeout-box text-4xl p-5 font-bold absolute bottom-0 right-0">
+                                <i className="fas fa-alarm-clock"></i> TIME OUT
+                            </button>
+                        </div> : 
+                        <div className="contents">
+                            <div className="flex justify-center text-5xl text-blue-500">
+                                <i className="fas fa-user-clock"></i>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> Your Time In today is </span> <span> {userlogs.morning_timein} </span>
+                            </div> 
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> You started your break in </span> <span> {userlogs.morning_timeout} </span>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> You ended your break in </span> <span> {userlogs.afternoon_timein} </span>
+                            </div>
+                            <div className="flex justify-between text-4xl text-center font-semibold py-5"> 
+                                <span> Your Time Out today is </span> <span> {userlogs.afternoon_timeout} </span>
+                            </div> 
+                        </div>
                         }
                     </div>
                 </div>

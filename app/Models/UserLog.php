@@ -9,6 +9,8 @@ class Userlog extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'userlog_id';
+
     protected $fillable = [
         'date',
         'morning_timein',

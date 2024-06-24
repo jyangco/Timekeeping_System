@@ -24,4 +24,5 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::get('/getuserlogtoday', 'App\Http\Controllers\api\UserLogsController@getuserlogtoday');
     Route::post('/setmorningtimein', 'App\Http\Controllers\api\UserLogsController@setmorningtimein');
+    Route::post('/getuserlogfortheday', 'App\Http\Controllers\api\UserLogsController@getuserlogfortheday');
 });

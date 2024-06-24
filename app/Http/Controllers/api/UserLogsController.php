@@ -29,6 +29,33 @@ class UserLogsController extends Controller
         return $user_log;
     }
 
+    //GET USER LOG FOR SPECIFIC DATE
+    public function getuserlogfortheday(Request $request){
+        $validator = Validator::make($request->all(), [
+            'date' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            $userlog = Userlog::select("*")->where('date', '=', $request->date)->get();
+            DB::commit();
+            return response()->json([
+                'message' => 'Success', 
+                'userlog' => $userlog
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     //SET USER TIMEIN
     public function setmorningtimein(Request $request) {
         $validator = Validator::make($request->all(), [

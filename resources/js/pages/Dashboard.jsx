@@ -69,7 +69,7 @@ function Dashboard() {
                     </div>
                     <div className="w-[60%] border-l-2 bordet-bold p-3 relative">
                         {userDetails.schedule !== moment(new Date()).format('dddd') ? 
-                            <div className="absolute text-7xl top-[30%] text-center">
+                            <div className="absolute font-semibold text-7xl top-[30%] text-center">
                                 Today is not your WFH Schedule
                             </div>
                         : userlogs === "" ?

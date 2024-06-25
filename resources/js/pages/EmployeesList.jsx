@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 
 import http from '../components/Config'
 import Layout from '../components/Layout'
+import Loader from '../components/Loader'
 
 function EmployeesList(){
     const [ emps, setEmps ] = useState([])
     const [ nameInput, setNameInput ] = useState("")
     const [ searchResult, setSearchResults ] = useState([])
+    const [ loading, setLoading ] = useState(true)
 
     const fetchEmployeeDetails = async() => {
         try {
@@ -21,6 +23,9 @@ function EmployeesList(){
 
     useEffect(() => {
         fetchEmployeeDetails()
+        setTimeout(() => {
+            setLoading(false)
+        }, 2500)
     }, [])
 
     const handleSearch = (e) => {
@@ -43,16 +48,29 @@ function EmployeesList(){
         setNameInput("")
     } 
 
+    if (loading) {
+        return(
+            <Layout>
+                <Loader/>
+            </Layout>
+        )
+    }
+
     var view = ""
         if (searchResult == "" && nameInput.length == 0) {
             view = (
                 <tbody>
                     {emps.map((value, ndx) => 
-                        <tr key={ndx}>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} </td>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_division} </td>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_unit} </td>
-                            <td className="border-2 border-black p-1 text-xl text-center"> {value.schedule} </td>
+                        <tr className="hover:cursor-pointer hover:bg-slate-400 hover:text-white" key={ndx}>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} {value.employee_suffix} </td>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_division} </td>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_unit} </td>
+                            <td className="border-2 border-black p-3 text-2xl text-center"> {value.schedule} </td>
+                            <td className="border-2 border-black p-3 text-2xl text-center">
+                                <Link to={`/employees/${value.id}`} state={{ id: `${value.id}` }} className="p-1 bg-green-500 border"> 
+                                    <i className="far fa-user-edit"></i>
+                                </Link>
+                            </td>
                         </tr>
                     )}
                 </tbody>
@@ -61,7 +79,7 @@ function EmployeesList(){
             view = (
                 <tbody>
                     <tr className='hover:cursor-pointer'>
-                        <td className="border-2 border-black text-center p-5 text-4xl" colSpan={6}> NO MATCH FOUND </td>
+                        <td className="border-2 border-black text-center p-5 text-4xl" colSpan={6}> Click search button to show results </td>
                     </tr>
                 </tbody>
             )
@@ -69,11 +87,16 @@ function EmployeesList(){
             view = (
                 <tbody>
                     {searchResult.map((value,ndx) => 
-                        <tr key={ndx}>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} </td>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_division} </td>
-                            <td className="border-2 border-black p-1 text-xl"> {value.employee_unit} </td>
-                            <td className="border-2 border-black p-1 text-xl text-center"> {value.schedule} </td>
+                        <tr className="hover:cursor-pointer hover:bg-slate-400 hover:text-white" key={ndx}>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} {value.employee_suffix} </td>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_division} </td>
+                            <td className="border-2 border-black p-3 text-2xl"> {value.employee_unit} </td>
+                            <td className="border-2 border-black p-3 text-2xl text-center"> {value.schedule} </td>
+                            <td className="border-2 border-black p-3 text-2xl text-center">
+                                <Link to={`/employees/${value.id}`} state={{ id: value.id}} className="p-1 bg-green-500 border"> 
+                                    <i className="far fa-user-edit"></i>
+                                </Link>
+                            </td>
                         </tr>
                     )}
                 </tbody>
@@ -109,10 +132,11 @@ function EmployeesList(){
                 <table className="table w-full">
                     <thead>
                         <tr>
-                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Name </th>
-                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Divison </th>
-                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Unit </th>
-                            <th className="border-2 border-black p-3 text-2xl w-[25%]"> Schedule </th>
+                            <th className="outline outline-1 border-2 border-black p-3 text-2xl w-[25%]"> Name </th>
+                            <th className="outline outline-1 border-2 border-black p-3 text-2xl w-[25%]"> Divison </th>
+                            <th className="outline outline-1 border-2 border-black p-3 text-2xl w-[25%]"> Unit </th>
+                            <th className="outline outline-1 border-2 border-black p-3 text-2xl w-[15%]"> Schedule </th>
+                            <th className="outline outline-1 border-2 border-black p-3 text-2xl w-[10%]"> Action </th>
                         </tr>
                     </thead>
                     {view}

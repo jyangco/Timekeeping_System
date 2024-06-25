@@ -24,13 +24,14 @@ class UserLogsController extends Controller
             ->select('*')
             ->where('date', '=', $date_today)
             ->join('employees', 'employees.employee_id', '=', 'userlogs.employee_id')
+            ->orderBy('morning_timein')
             ->get();
         return $user_log;
     }
 
     //GET CURRENT USER'S LOG TODAY
     public function getuserlog() {
-        $date_today = Carbon::now()->format('F d, Y');
+        $date_today = Carbon::now('Asia/Singapore')->format('F d, Y');
         $user = Auth::user();
         $user_log = DB::table('userlogs')
             ->select('*')
@@ -97,6 +98,111 @@ class UserLogsController extends Controller
                 'afternoon_timeout' => "",
                 'attachment' => "",
             ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Success', 
+                'userlog' => $userlog
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //SET USER USER BREAKTIME IN
+    public function setmorningtimeout(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'userlog_id'  => 'required',
+            'morning_timeout' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            $userlog = DB::table('userlogs')
+                ->where('userlog_id', '=', $request->userlog_id)
+                ->update([
+                    'morning_timeout' => $request->morning_timeout
+                ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Success', 
+                'userlog' => $userlog
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //SET USER USER BREAKTIME OUT
+    public function setafternoontimein(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'userlog_id'  => 'required',
+            'afternoon_timein' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            $userlog = DB::table('userlogs')
+                ->where('userlog_id', '=', $request->userlog_id)
+                ->update([
+                    'afternoon_timein' => $request->afternoon_timein
+                ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Success', 
+                'userlog' => $userlog
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //SET USER USER TIME OUT
+    public function setafternoontimeout(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'userlog_id'  => 'required',
+            'afternoon_timeout' => 'required',
+            'attachment' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = $file->getClientOriginalName();
+                $path = ("accomplishments");
+                $file_name = $path."/".$filename;
+                $file->move($path, $filename);
+            }
+            $userlog = DB::table('userlogs')
+                ->where('userlog_id', '=', $request->userlog_id)
+                ->update([
+                    'afternoon_timeout' => $request->afternoon_timeout,
+                    'attachment' => $file_name
+                ]);
             DB::commit();
             return response()->json([
                 'message' => 'Success', 

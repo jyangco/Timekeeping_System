@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('afternoon_timein');
             $table->string('afternoon_timeout');
             $table->string('attachment');
-            $table->integer('employee_id');
+            $table->string('employee_id');
             $table->timestamps();
         });
     }

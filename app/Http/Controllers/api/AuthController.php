@@ -30,6 +30,11 @@ class AuthController extends Controller
                     'status' => 401,
                     'message' => 'Invalid Credentials'
                 ]);
+            } else if ($user->status != 'active') {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'User Inactive'
+                ]);
             } else {
                 $role = User::select('users.*')->where('id', $user->id)->first();
                 if ($role->role == 'admin') {
@@ -83,11 +88,63 @@ class AuthController extends Controller
             "employee_fname" => $profile->employee_fname,
             "employee_minitial" => $profile->employee_minitial,
             "employee_lname" => $profile->employee_lname,
+            "employee_suffix" => $profile->employee_suffix,
             "employee_division" => $profile->employee_division,
             "employee_unit" => $profile->employee_unit,
             "schedule" => $profile->schedule,
             "role" => $user->role
         ]);
+    }
+
+    //UPDATE PASSWORD
+    public function passwordchange(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                "employee_id" => "required", 
+                "old_pass" => "required|min:8",
+                "new_pass" => "required|min:8",
+                "confirm_pass" => "required|min:8",
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'validation_errors' => $validator->messages(),
+                    'status' => 400
+                ]);
+            } 
+            else {
+                $user = DB::table('users')->select('*')->where('employee_id', '=', $request->employee_id)->first();
+                if (Hash::check($request->new_pass, $user->password)){
+                    return response()->json([
+                        'status' => 304,
+                        "message" => "NEW PASSWORD cannot be the same as the OLD PASSWORD"
+                    ]);
+                } else if (Hash::check($request->old_pass, $user->password) && $request->new_pass == $request->confirm_pass) {
+                    DB::table('users')
+                    ->where('employee_id',$request->employee_id)
+                    ->update([
+                        "password" => Hash::make($request->confirm_pass),
+                    ]);
+                    return response()->json([
+                        'status' => 200,
+                        "message" => "Password Changed!"
+                    ]);
+                } else if (!Hash::check($request->old_pass, $user->password)){
+                    return response()->json([
+                        'status' => 401,
+                        "message" => "Old password incorrect!"
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => 400,
+                        "message" => "Something went wrong!"
+                    ]);
+                }
+            }
+        } catch(\Exception $exception) {
+            return response([
+                'message' => $exception->getMessage()
+            ], status:400);
+        }
     }
 
 } //END OF FILE

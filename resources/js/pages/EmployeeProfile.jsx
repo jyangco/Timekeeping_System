@@ -1,23 +1,16 @@
-import React, { useState } from "react"
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 
-import http from '../components/Config'
 import Layout from '../components/Layout'
+import http from "../components/Config"
+import Loader from '../components/Loader'
 
-function NewUser() {
+function EmployeeProfile(){
+    const location = useLocation()
     const history = useNavigate()
-    const [userInput, setUserInput] = useState({
-        employee_id: "",
-        employee_fname: "",
-        employee_minitial: "",
-        employee_lname: "",
-        employee_suffix: "",
-        employee_division: "",
-        employee_unit: "",
-        schedule: "",
-        role: ""
-    })
+    const [ empProfile, setEmpProfile ] = useState("")
+    const [ loading, setLoading ] = useState(true)
 
     const divisions = [
         'Office of the Director',
@@ -65,24 +58,50 @@ function NewUser() {
         'Friday',
     ]
 
-    const registernewuser = async(e) => {
+    useEffect(() => {
+        const location_id = location.state.id
+        const data = {
+            id: location_id
+        }
+        const fetchEmployeeProfile = async() => {
+            try {
+                const response = await http.post('/api/getemployeeprofile', data)
+                setEmpProfile(response.data.user)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchEmployeeProfile()
+        setTimeout(() => {
+            setLoading(false)
+        }, 2500)
+    },[])
+
+    const handleInputChange = (e) => {
+        e.persist()
+        setEmpProfile({...empProfile, [e.target.name]: e.target.value })
+    }
+
+    const updateemployeeprofile = async(e) => {
         e.preventDefault()
         const data = {
-            employee_id: userInput.employee_id,
-            employee_fname: userInput.employee_fname,
-            employee_minitial: userInput.employee_minitial,
-            employee_lname: userInput.employee_lname,
-            employee_suffix: userInput.employee_suffix,
-            employee_division: userInput.employee_division,
-            employee_unit: userInput.employee_unit,
-            schedule: userInput.schedule,
-            role: userInput.role,
+            id: empProfile.id,
+            employee_id: empProfile.employee_id,
+            employee_fname: empProfile.employee_fname,
+            employee_minitial: empProfile.employee_minitial,
+            employee_lname: empProfile.employee_lname,
+            employee_suffix: empProfile.employee_suffix,
+            employee_division: empProfile.employee_division,
+            employee_unit: empProfile.employee_unit,
+            schedule: empProfile.schedule,
+            role: empProfile.role,
+            status: empProfile.status,
         }
-        const response = await http.post('/api/newuser', data)
+        const response = await http.post('/api/editemployeeprofile', data)
         if (response.status === 200) {
             Swal.fire({
                 title: response.data.message,
-                text: "User registered",
+                text: "User updated",
                 icon: "success"
             })
             history('/employees')
@@ -101,17 +120,46 @@ function NewUser() {
         }
     }
 
-    const handleInputChange = (e) => {
-        e.persist()
-        setUserInput({...userInput, [e.target.name]: e.target.value })
+    if (loading) {
+        return(
+            <Layout>
+                <Loader/>
+            </Layout>
+        )
     }
 
-    return (
+    return(
         <Layout>
             <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[80%] mx-auto p-5">
                 <Link to={'/employees'} className="text-lg"> <i className="fas fa-arrow-alt-left"></i> </Link>
-                <div className="text-4xl font-sans font-bold pb-10"> Employee Registry</div>
-                <form className="text-xl" onSubmit={registernewuser}>
+                <div className="text-4xl font-sans font-bold pb-10"> Employee Profile</div>
+                <form className="text-xl" onSubmit={updateemployeeprofile}>
+                    <div className="flex justify-between">
+                        <div className="form-group p-2">
+                            <label className="font-semibold p-2" htmlFor="status"> Account status: </label>
+                            <label className="p-2">
+                                <input className="border-2 border-black p-1"
+                                    type="radio" 
+                                    name="status"
+                                    checked={ empProfile.status === 'active'}
+                                    value={'active'}
+                                    onChange={handleInputChange}
+                                />
+                                Active
+                            </label>
+                            <label className="p-2">
+                                <input className="border-2 border-black p-1"
+                                    type="radio" 
+                                    name="status"
+                                    checked={ empProfile.status === 'inactive'}
+                                    value={'inactive'}
+                                    onChange={handleInputChange}
+                                />
+                                Inactive
+                            </label>
+                        </div>
+                        <Link to={`/employees/${empProfile.id}/logs`} state={{ employee_id: `${empProfile.employee_id}` }} className="text-lg p-3"> <i className="fas fa-arrow-alt-right"></i> </Link>
+                    </div>
                     <div className="flex justify-between">
                         <div className="w-[50%]">
                             <div className="flex">
@@ -121,14 +169,14 @@ function NewUser() {
                                         type="text" 
                                         name="employee_id"
                                         onChange={handleInputChange}
-                                        value={userInput.employee_id}
+                                        value={empProfile.employee_id}
                                     />
                                 </div>
                                 <div className="form-group p-2 flex justify-between w-[50%]">
                                     <label className="font-semibold p-2" htmlFor="role"> Role: </label>
                                     <select className="custom-select border-2 border-black p-1 w-full"
                                         name="role"
-                                        value={userInput.role}
+                                        value={empProfile.role}
                                         onChange={handleInputChange}
                                     >
                                         <option value={""} className="text-center"> -- SELECT ONE -- </option>
@@ -141,7 +189,7 @@ function NewUser() {
                                 <label className="font-semibold p-2" htmlFor="employee_division"> Division: </label>
                                 <select className="custom-select border-2 border-black p-1 w-full"
                                     name="employee_division"
-                                    value={userInput.employee_division}
+                                    value={empProfile.employee_division}
                                     onChange={handleInputChange}
                                 >
                                     <option value={""} className="text-center"> -- SELECT ONE -- </option>
@@ -155,28 +203,28 @@ function NewUser() {
                                 <select className="custom-select border-2 border-black p-1 w-full"
                                     name="employee_unit"
                                     onChange={handleInputChange}
-                                    value={userInput.employee_unit}
-                                    disabled={ userInput.employee_division.length == 0 ? true : false }
+                                    value={empProfile.employee_unit}
+                                    // disabled={ empProfile.employee_division.length == 0 ? true : false }
                                 >
                                     <option className="text-center"> -- SELECT ONE -- </option>
                                     {
-                                    userInput.employee_division == 'Office of the Director' ? 
+                                    empProfile.employee_division == 'Office of the Director' ? 
                                         units[0].map((val,ndx) => 
                                             <option key={ndx} value={val}> {val} </option>
                                         ) : 
-                                    userInput.employee_division == 'Science Education and Innovations Division' ? 
+                                    empProfile.employee_division == 'Science Education and Innovations Division' ? 
                                         units[1].map((val,ndx) => 
                                             <option key={ndx} value={val}> {val} </option>
                                         ) :
-                                    userInput.employee_division == 'Finance and Administrative Division' ? 
+                                    empProfile.employee_division == 'Finance and Administrative Division' ? 
                                         units[2].map((val,ndx) => 
                                             <option key={ndx} value={val}> {val} </option>
                                         ) :
-                                    userInput.employee_division == 'Science and Technology Scholarship Division' ? 
+                                    empProfile.employee_division == 'Science and Technology Scholarship Division' ? 
                                         units[3].map((val,ndx) => 
                                             <option key={ndx} value={val}> {val} </option>
                                         ) :
-                                    userInput.employee_division == 'Science and Technology Manpower Education Research and Promotions Division' ? 
+                                    empProfile.employee_division == 'Science and Technology Manpower Education Research and Promotions Division' ? 
                                         units[4].map((val,ndx) => 
                                             <option key={ndx} value={val}> {val} </option>
                                         ) : ""
@@ -191,7 +239,7 @@ function NewUser() {
                                     type="text" 
                                     name="employee_fname"
                                     onChange={handleInputChange}
-                                    value={userInput.employee_fname}
+                                    value={empProfile.employee_fname}
                                 />
                             </div>
                             <div className="form-group p-2 flex justify-between">
@@ -200,7 +248,7 @@ function NewUser() {
                                     type="text" 
                                     name="employee_lname"
                                     onChange={handleInputChange}
-                                    value={userInput.employee_lname}
+                                    value={empProfile.employee_lname}
                                 />
                             </div>
                             <div className="flex">
@@ -210,7 +258,7 @@ function NewUser() {
                                         type="text" 
                                         name="employee_minitial"
                                         onChange={handleInputChange}
-                                        value={userInput.employee_minitial}
+                                        value={empProfile.employee_minitial}
                                     />
                                 </div>
                                 <div className="form-group p-2 flex justify-between w-[50%]">
@@ -219,7 +267,7 @@ function NewUser() {
                                         type="text" 
                                         name="employee_suffix"
                                         onChange={handleInputChange}
-                                        value={userInput.employee_suffix}
+                                        value={empProfile.employee_suffix}
                                     />
                                 </div>
                             </div>
@@ -228,7 +276,7 @@ function NewUser() {
                                 <select className="custom-select border-2 border-black p-1 w-[75%]"
                                     name="schedule"
                                     onChange={handleInputChange}
-                                    value={userInput.schedule}
+                                    value={empProfile.schedule}
                                 >
                                     <option value={""} className="text-center"> -- SELECT ONE -- </option>
                                     {days.map((val,ndx) => 
@@ -241,7 +289,7 @@ function NewUser() {
                     <div className="flex justify-center w-full py-10">
                         <input className="container-box w-[75%] text-3xl font-bold p-2 hover:cursor-pointer hover:shadow-2xl"
                             type='submit'
-                            value={"Register"}
+                            value={"Update"}
                         />
                     </div>
                 </form>
@@ -250,4 +298,4 @@ function NewUser() {
     )
 }
 
-export default NewUser
+export default EmployeeProfile

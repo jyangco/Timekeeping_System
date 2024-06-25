@@ -16,6 +16,7 @@ class Employee extends Model
         'employee_lname',
         'employee_suffix',
         'employee_division',
-        'employee_unit'
+        'employee_unit',
+        'schedule'
     ];
 }

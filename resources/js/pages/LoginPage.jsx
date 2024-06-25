@@ -59,6 +59,12 @@ function LoginPage() {
                 text: "username or password is incorrect", 
                 icon: "warning"
             })
+        } else if (res.data.status === 403) {
+            Swal.fire({
+                title: res.data.message, 
+                text: "this account is inactive", 
+                icon: "error"
+            })
         } else {
             setUserInput({ error_list: res.data.validation_errors })
         }

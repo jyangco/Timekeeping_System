@@ -3,12 +3,17 @@ import moment from "moment"
 
 import http from '../components/Config'
 import Layout from '../components/Layout'
+import Modal from "../components/Modal"
+import Loader from '../components/Loader'
 
 function EmployeesLogs(){
     const [ date_today, set_date_today ] = useState(moment(new Date()).format("YYYY-MM-DD"))
     const [ userLog, setUserLogs ] = useState([])
     // const [ searchResult, setSearchResults ] = useState([])
-    const [ nameInput, setNameInput ] = useState("")
+    // const [ nameInput, setNameInput ] = useState("")
+    const [ show, setShow ] = useState(false)
+    const [ file, setFile ] = useState("")
+    const [ loading, setLoading ] = useState(true)
 
     const fetchUserLogs = async() => {
         try {
@@ -35,6 +40,9 @@ function EmployeesLogs(){
 
     useEffect(() => {
         fetchUserLogs()
+        setTimeout(() => {
+            setLoading(false)
+        }, 2500)
     },[])
 
     const handleInputChange = (e) => {
@@ -48,6 +56,16 @@ function EmployeesLogs(){
                 setUserLogs(response.data.userlog)
             })
         }, 100)
+    }
+
+    const setFilePath = (el) => {
+        setFile(el)
+        setShow(true)
+    }
+
+    const closeModal = (e) => {
+        e.preventDefault()
+        setShow(false)
     }
 
     // const handleSearch = (e) => {
@@ -111,12 +129,28 @@ function EmployeesLogs(){
     //         )
     //     }
 
+    if (loading) {
+        return(
+            <Layout>
+                <Loader/>
+            </Layout>
+        )
+    }
+
     return(
         <Layout>
+            <Modal show={show} handleClose={closeModal}>
+                <iframe 
+                    className='w-[100%] border-4 border-purplehaze' 
+                    // src={`https://docs.google.com/gview?url=${encodeURIComponent("/" + file)}&embedded=true`}
+                    src={window.location.origin + "/" + file + '#toolbar=1&view=fit'} 
+                />
+            </Modal>
             <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[90%] mx-auto p-5">
-                <div className="flex justify-between font-sans font-bold pb-10">
+                <div className="flex justify-between font-sans font-bold py-10 sticky -top-5 bg-slate-300">
                     <div className="text-4xl"> Employee Logs </div>
-                    <div className="text-2xl">
+                    <div className="text-4xl">
+                        Date: {moment(date_today).format('LL')}
                         {/* <div className="flex p-2 w-[100%]">
                             <button className='rounded-l-lg bg-slate-500 text-white text-lg px-2' onClick={handleClear}>
                                 <i className="far fa-sync"></i>
@@ -138,35 +172,45 @@ function EmployeesLogs(){
                     </div>
                 </div>
                 <table className="table w-full">
-                    <thead>
-                        <tr>
+                    <thead className="sticky top-20 bg-slate-300">
+                        {/* <tr>
                             <th className="border-2 border-black p-1 text-3xl" colSpan={6}>
                                 Date: {moment(date_today).format('LL')}
                             </th>
+                        </tr> */}
+                        <tr>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[5%]" rowSpan={2}> # </th>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[20%]" rowSpan={2}> Name </th>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[35%]" rowSpan={2}> Divison/Unit </th>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[15%]" colSpan={2}> Morning </th>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[15%]" colSpan={2}> Afternoon </th>
+                            <th className="outline outline-1 border-2 border-black p-1 text-2xl w-[10%]" rowSpan={2}> File Attachment </th>
                         </tr>
                         <tr>
-                            <th className="border-2 border-black p-1 text-2xl w-[25%]" rowSpan={2}> Name </th>
-                            <th className="border-2 border-black p-1 text-2xl w-[45%]" rowSpan={2}> Divison/Unit </th>
-                            <th className="border-2 border-black p-1 text-2xl w-[15%]" colSpan={2}> Morning </th>
-                            <th className="border-2 border-black p-1 text-2xl w-[15%]" colSpan={2}> Afternoon </th>
-                        </tr>
-                        <tr>
-                            <th className="border-2 border-black p-1 w-48 text-xl"> IN </th>
-                            <th className="border-2 border-black p-1 w-48 text-xl"> OUT </th>
-                            <th className="border-2 border-black p-1 w-48 text-xl"> IN </th>
-                            <th className="border-2 border-black p-1 w-48 text-xl"> OUT </th>
+                            <th className="outline outline-1 border-2 border-black p-1 w-48 text-xl"> IN </th>
+                            <th className="outline outline-1 border-2 border-black p-1 w-48 text-xl"> OUT </th>
+                            <th className="outline outline-1 border-2 border-black p-1 w-48 text-xl"> IN </th>
+                            <th className="outline outline-1 border-2 border-black p-1 w-48 text-xl"> OUT </th>
                         </tr>
                     </thead>
                     {/* {view} */}
                     <tbody>
                         {userLog.map((value, ndx) => 
-                            <tr key={ndx}>
-                                <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} </td>
+                            <tr className="hover:cursor-pointer hover:bg-slate-400 hover:text-white" key={ndx}>
+                                <td className="border-2 border-black p-1 text-xl text-center"> {ndx+1} </td>
+                                <td className="border-2 border-black p-1 text-xl"> {value.employee_fname} {value.employee_minitial}. {value.employee_lname} {value.employee_suffix} </td>
                                 <td className="border-2 border-black p-1 text-xl"> {value.employee_division} / <br/> {value.employee_unit} </td>
                                 <td className="border-2 border-black p-1 text-xl text-center"> {value.morning_timein} </td>
                                 <td className="border-2 border-black p-1 text-xl text-center"> {value.morning_timeout} </td>
                                 <td className="border-2 border-black p-1 text-xl text-center"> {value.afternoon_timein} </td>
                                 <td className="border-2 border-black p-1 text-xl text-center"> {value.afternoon_timeout} </td>
+                                <td className="border-2 border-black p-1 text-xl text-center">
+                                    {value.attachment ? 
+                                        <button onClick={() => setFilePath(value.attachment)} className="w-full py-2 border hover:bg-slate-500"> 
+                                            <i className="fas fa-file-download"></i>
+                                        </button> : ""
+                                    }
+                                </td>
                             </tr>
                         )}
                     </tbody>

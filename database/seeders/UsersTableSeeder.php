@@ -16,17 +16,11 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'username' => 185,
+                'username' => '185',
                 'password' => Hash::make('password'),
                 'status' => 'active',
                 'role' => 'admin'
             ],
-            [
-                'username' => 225,
-                'password' => Hash::make('password'),
-                'status' => 'active',
-                'role' => 'user'
-            ]
         ]);
     }
 }

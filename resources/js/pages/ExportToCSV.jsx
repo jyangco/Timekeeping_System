@@ -1,6 +1,8 @@
 import React from 'react'
 import moment from 'moment-timezone'
 
+import Swal from 'sweetalert2'
+
 const ExportToCSV = ({ elements }) => {
     const fileHeaders = [
         'employee_id',
@@ -30,7 +32,10 @@ const ExportToCSV = ({ elements }) => {
     function downloadCSV(jsonData, headers) {
     const csvData = convertJSONToCSV(jsonData, headers)
     if (csvData === '') {
-        alert('No data to export')
+        Swal.fire({
+            text: "no data to export",
+            icon: "info"
+        })
     } else {
         const blob = new Blob([csvData], { type: 'text/csvcharset=utf-8' })
         const link = document.createElement('a')

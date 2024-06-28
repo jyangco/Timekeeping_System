@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 import { GlobalContext } from '../components/GlobalContext'
 import http from '../components/Config'
@@ -15,6 +15,7 @@ function Dashboard() {
     const [ attachment, setAttachment ] = useState(null)
     const [error, setError] = useState("")
     const [ loading, setLoading ] = useState(true)
+    const [ showbg, setShowbg ] = useState(false)
 
     const fetchUserLogToday = async() => {
         try {
@@ -35,10 +36,11 @@ function Dashboard() {
     const setMorningTimeIn = async(e) => {
         e.preventDefault()
         const data = {
-            date: moment(new Date()).format('LL'),
-            morning_timein: moment(new Date()).format('LT'),
+            date: moment.tz('Asia/Manila').format('LL'),
+            morning_timein: moment.tz('Asia/Manila').format('LT'),
             employee_id: userDetails.employee_id,
         }
+        console.log(data)
         try {
             const response = await http.post('/api/setmorningtimein', data)
             setUserLogs(response.data)
@@ -56,7 +58,7 @@ function Dashboard() {
     const setMorningTimeOut = async(e) => {
         e.preventDefault()
         const data = {
-            morning_timeout: moment(new Date()).format('LT'),
+            morning_timeout: moment.tz('Asia/Manila').format('LT'),
             userlog_id: userlogs.userlog_id,
         }
         try {
@@ -76,7 +78,7 @@ function Dashboard() {
     const setAfternoonTimeIn = async(e) => {
         e.preventDefault()
         const data = {
-            afternoon_timein: moment(new Date()).format('LT'),
+            afternoon_timein: moment.tz('Asia/Manila').format('LT'),
             userlog_id: userlogs.userlog_id,
         }
         try {
@@ -96,7 +98,7 @@ function Dashboard() {
     const setAfternoonTimeOut = async(e) => {
         e.preventDefault()
         const data = new FormData()
-            data.append('afternoon_timeout', moment(new Date()).format('LT')),
+            data.append('afternoon_timeout', moment.tz('Asia/Manila').format('LT')),
             data.append('userlog_id', userlogs.userlog_id),
             data.append('attachment', attachment)
         try {
@@ -136,9 +138,16 @@ function Dashboard() {
         )
     }
 
+    const toggleBackgroundVisibility = () => {
+        setShowbg(showbg ? false : true)
+    }
+
     return (
         <Layout>
-            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[80%] mx-auto p-5">
+            <button className="absolute top-20 bg-white m-3 p-3 rounded-3xl font-bold" onClick={toggleBackgroundVisibility}>
+                {showbg ? <span> Show Dashboard </span> : <span> Hide Dashboard </span> }
+            </button>
+            <div className={`${showbg ? "invisible" : "visible"} container-box mt-20 overflow-auto max-h-[80vh] w-[85%] mx-auto p-5`}>
                 <div className="flex">
                     <div className="w-[40%] border-r-2 border-black p-3">
                         <div className="text-center text-5xl pb-12 font-mono font-bold"> WFH Timekeeping System </div>
@@ -147,7 +156,7 @@ function Dashboard() {
                         </div>
                         <div className="form-group py-2">
                             <label className="text-xl font-semibold"> Name: </label>
-                            <div className="text-2xl font-bold font-sans"> {userDetails.employee_fname} {userDetails.employee_minitial}. {userDetails.employee_lname} {userDetails.employee_suffix} </div>
+                            <div className="text-2xl font-bold font-sans"> {userDetails.employee_fname} {userDetails.employee_minitial} {userDetails.employee_lname} {userDetails.employee_suffix} </div>
                         </div>
                         <div className="form-group py-2">
                             <label className="text-xl font-semibold"> Division: </label>
@@ -157,14 +166,16 @@ function Dashboard() {
                             <label className="text-xl font-semibold"> Unit: </label>
                             <div className="text-2xl font-bold font-sans"> {userDetails.employee_unit} </div>
                         </div>
-                        <div className="flex justify-end">
-                            <Link to="/password-change" className="p-2 border-2 border-black rounded-xl shadow-md hover:!bg-black hover:!text-white"> 
-                                Employees <i className="fas fa-users-cog"></i> 
+                        <div className="flex justify-between py-3">
+                            <Link to={'/my-log-history'} state={{ employee_id: `${userDetails.employee_id}` }} className="p-2 border-2 border-black rounded-xl shadow-md hover:!bg-black hover:!text-white"> 
+                                Log History <i className="fas fa-history"></i> 
+                            </Link><Link to="/password-change" className="p-2 border-2 border-black rounded-xl shadow-md hover:!bg-black hover:!text-white"> 
+                                User settings <i className="fas fa-users-cog"></i> 
                             </Link>
                         </div>
                     </div>
                     <div className="w-[60%] border-l-2 bordet-bold p-3 relative">
-                        {userDetails.schedule != moment(new Date()).format('dddd') ? 
+                        {userDetails.schedule != moment.tz('Asia/Manila').format('dddd') ? 
                             <div className="absolute font-semibold text-7xl top-[30%] text-center">
                                 Today is not your WFH Schedule
                             </div>
@@ -229,10 +240,10 @@ function Dashboard() {
                                     type="file" 
                                     onChange={handleAddFile}
                                 />
-                                <span className="text-red-500 font-semibold float-left"> {error} </span>
-                            </form>
+                                <div className="text-red-500 font-semibold float-left"> {error} </div>
+                            </form> <br />
                             <div className="text-sky-700 text-lg w-full"> *File name format <br /> (last name)_(date today)_Accomplishment <br /> 
-                                e.g {userDetails.employee_lname}_{moment(new Date()).format("LL")}_Accomplishment
+                                e.g {userDetails.employee_lname}_{moment.tz('Asia/Manila').format("LL")}_Accomplishment
                             </div>
                             <button onClick={setAfternoonTimeOut} 
                                 className={attachment == null ? 

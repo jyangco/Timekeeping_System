@@ -1,16 +1,16 @@
 import React, {Component} from 'react'
-import moment from 'moment/moment'
+import moment from 'moment-timezone'
 
 class DateTime extends Component {
     constructor(props) {
         super(props)
         this.state = { 
-            date: new Date()    ,
+            date: moment.tz('Asia/Manila'),
         }
     }
 
     tick() {
-        this.setState({ date: new Date() })
+        this.setState({ date: moment.tz('Asia/Manila')})
     }
 
     componentDidMount() {

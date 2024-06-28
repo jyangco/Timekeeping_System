@@ -82,7 +82,7 @@ function NewUser() {
         if (response.status === 200) {
             Swal.fire({
                 title: response.data.message,
-                text: "User registered",
+                text: "User registered, their default password is <password>",
                 icon: "success"
             })
             history('/employees')
@@ -108,7 +108,7 @@ function NewUser() {
 
     return (
         <Layout>
-            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[80%] mx-auto p-5">
+            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[90%] mx-auto p-5">
                 <Link to={'/employees'} className="text-lg"> <i className="fas fa-arrow-alt-left"></i> </Link>
                 <div className="text-4xl font-sans font-bold pb-10"> Employee Registry</div>
                 <form className="text-xl" onSubmit={registernewuser}>

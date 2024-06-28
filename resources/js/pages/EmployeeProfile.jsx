@@ -120,6 +120,49 @@ function EmployeeProfile(){
         }
     }
 
+    const resetuserpassword = (e) => {
+        e.preventDefault()
+        const data = {
+            username: empProfile.employee_id,
+        }
+        Swal.fire({
+            allowOutsideClick: false,
+            title: "Reset Password",
+            text: "Do you wish to proceed?",
+            icon: "warning",
+            showCancelButton: false,
+            showDenyButton: true,
+            denyButtonText: 'Cancel',
+            confirmButtonText: 'Yes',
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                http.post('/api/resetuserpassword', data).then(response => {
+                    if (response.data.status == 200) {
+                        Swal.fire({
+                            title: response.data.message,
+                            text: "user's password is reset to default <password>",
+                            icon: "success"
+                        })
+                    } else {
+                        Swal.fire({
+                            title: response.data.error, 
+                            text: response.data.message, 
+                            icon: "warning"
+                        })
+                    }
+                })
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                title: (error.code),
+                text: (error.message),
+                icon: "error",
+            })
+        })
+    }
+
     if (loading) {
         return(
             <Layout>
@@ -130,9 +173,14 @@ function EmployeeProfile(){
 
     return(
         <Layout>
-            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[80%] mx-auto p-5">
+            <div className="container-box mt-20 overflow-auto max-h-[80vh] w-[90%] mx-auto p-5">
                 <Link to={'/employees'} className="text-lg"> <i className="fas fa-arrow-alt-left"></i> </Link>
-                <div className="text-4xl font-sans font-bold pb-10"> Employee Profile</div>
+                <div className="flex justify-between font-bold pb-10"> 
+                    <span className="text-4xl font-sans"> Employee Profile </span> 
+                    <span className="classname text-xl"> 
+                        <Link to={`/employees/${empProfile.id}/logs`} state={{ employee_id: `${empProfile.employee_id}` }} className="text-lg"> View user logs <i className="fas fa-arrow-alt-right"></i> </Link> 
+                    </span>
+                </div>
                 <form className="text-xl" onSubmit={updateemployeeprofile}>
                     <div className="flex justify-between">
                         <div className="form-group p-2">
@@ -158,7 +206,9 @@ function EmployeeProfile(){
                                 Inactive
                             </label>
                         </div>
-                        <Link to={`/employees/${empProfile.id}/logs`} state={{ employee_id: `${empProfile.employee_id}` }} className="text-lg p-3"> <i className="fas fa-arrow-alt-right"></i> </Link>
+                        <button className='border py-1 px-2 rounded-lg border-2 border-black bg-white' onClick={resetuserpassword}>
+                            Reset User Password
+                        </button>
                     </div>
                     <div className="flex justify-between">
                         <div className="w-[50%]">

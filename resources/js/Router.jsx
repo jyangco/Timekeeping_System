@@ -9,6 +9,7 @@ import NewUser from './pages/NewUser'
 import EmployeeProfile from './pages/EmployeeProfile'
 import EmployeeLogs from './pages/EmployeeLogs'
 import PasswordChange from './pages/PasswordChange'
+import CurrentUserLog from './pages/CurrentUserLog'
 import NotFound from './pages/NotFound'
 
 const Main = (props) =>(
@@ -18,6 +19,7 @@ const Main = (props) =>(
         <Route exact={true} path="/employees" element={ <EmployeesList/> }/>
         <Route exact={true} path="/employees/:id" element={ <EmployeeProfile/> }/>
         <Route exact={true} path="/employees/:id/logs" element={ <EmployeeLogs/> }/>
+        <Route exact={true} path="/my-log-history" element={ <CurrentUserLog/> }/>
         <Route exact={true} path="/employees/new" element={ <NewUser/> }/>
         <Route exact={true} path="/employee-logs" element={ <EmployeesLogs/> }/>
         <Route exact={true} path="/password-change" element={ <PasswordChange/> }/>

@@ -22,6 +22,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::get('/getuserdetails', 'App\Http\Controllers\api\AuthController@getuserdetails');
     Route::post('/logout', 'App\Http\Controllers\api\AuthController@logout');
     Route::post('/passwordchange', 'App\Http\Controllers\api\AuthController@passwordchange');
+    Route::post('/resetuserpassword', 'App\Http\Controllers\api\AuthController@resetuserpassword');
 
     Route::get('/getuserlogtoday', 'App\Http\Controllers\api\UserLogsController@getuserlogtoday');
     Route::get('/getuserlog', 'App\Http\Controllers\api\UserLogsController@getuserlog');
@@ -36,5 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('/getemployeeprofile', 'App\Http\Controllers\api\EmployeesController@getemployeeprofile');
     Route::post('/editemployeeprofile', 'App\Http\Controllers\api\EmployeesController@editemployeedetails');
     Route::post('/getemployeelogs', 'App\Http\Controllers\api\EmployeesController@getemployeelogs');
+    Route::post('/uploadbackground', 'App\Http\Controllers\api\EmployeesController@uploadbackground');
+    Route::post('/removebackground', 'App\Http\Controllers\api\EmployeesController@removebackground');
 });
 

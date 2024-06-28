@@ -7,7 +7,7 @@ import http from '../components/Config'
 import Layout from '../components/Layout'
 import Loader from '../components/Loader'
 
-function EmployeeLogs(){
+function CurrentUserLog(){
     const location = useLocation()
     const [ userLog, setUserLogs ] = useState([])
     const [ loading, setLoading ] = useState(true)
@@ -59,7 +59,6 @@ function EmployeeLogs(){
                         }'
                     />
                 </div>
-                <Link to={`/employees/${userLog.user.id}`} state={{ id: `${userLog.user.id}` }} className="text-lg"> <i className="fas fa-arrow-alt-left"></i> </Link>
                 <div className="ComponentToPrint" ref={componentRef}>
                     <div className="text-3xl font-sans font-bold pb-5 pt-5">
                         {userLog.user.employee_fname} {userLog.user.employee_minitial} {userLog.user.employee_lname} {userLog.user.employee_suffix}
@@ -103,4 +102,4 @@ function EmployeeLogs(){
     )
 }
 
-export default EmployeeLogs
+export default CurrentUserLog

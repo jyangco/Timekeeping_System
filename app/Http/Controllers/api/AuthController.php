@@ -79,8 +79,9 @@ class AuthController extends Controller
     public function getuserdetails(){
         $user = Auth::user();
         $profile = DB::table('employees')
-            ->select('*')
-            ->where('employee_id', '=', $user->username)
+            ->select('employees.*', 'background_images.image_path')
+            ->where('employees.employee_id', '=', $user->username)
+            ->leftjoin('background_images' ,'background_images.employee_id', '=', 'employees.employee_id')
             ->first();
         return response()->json([
             "id" => $profile->id,
@@ -92,6 +93,7 @@ class AuthController extends Controller
             "employee_division" => $profile->employee_division,
             "employee_unit" => $profile->employee_unit,
             "schedule" => $profile->schedule,
+            "background" => $profile->image_path,
             "role" => $user->role
         ]);
     }
@@ -112,7 +114,7 @@ class AuthController extends Controller
                 ]);
             } 
             else {
-                $user = DB::table('users')->select('*')->where('employee_id', '=', $request->employee_id)->first();
+                $user = DB::table('users')->select('*')->where('username', '=', $request->employee_id)->first();
                 if (Hash::check($request->new_pass, $user->password)){
                     return response()->json([
                         'status' => 304,
@@ -120,7 +122,7 @@ class AuthController extends Controller
                     ]);
                 } else if (Hash::check($request->old_pass, $user->password) && $request->new_pass == $request->confirm_pass) {
                     DB::table('users')
-                    ->where('employee_id',$request->employee_id)
+                    ->where('username',$request->employee_id)
                     ->update([
                         "password" => Hash::make($request->confirm_pass),
                     ]);
@@ -146,5 +148,36 @@ class AuthController extends Controller
             ], status:400);
         }
     }
+
+    //RESET USER PASSWORD
+    public function resetuserpassword(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'username' => "required"
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'validation_errors' => $validator->messages(),
+                    'status' => 400
+                ]);
+            } 
+            else {
+                DB::table('users')
+                    ->where('username', $request->username)
+                    ->update([
+                        "password" => Hash::make("password"),
+                    ]);
+                return response()->json([
+                    'status' => 200,
+                    "message" => "Success!"
+                ]);
+            }
+        } catch(\Exception $exception) {
+            return response([
+                'message' => $exception->getMessage()
+            ], status:400);
+        }
+    }
+
 
 } //END OF FILE

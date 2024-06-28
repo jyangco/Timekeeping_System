@@ -13,13 +13,14 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Userlog;
+use App\Models\BackgroundImage;
 
 class EmployeesController extends Controller
 {
     //GET ALL EMPLOYEES
     public function getallemployees(){
         $employees = DB::table('employees')
-            ->select('*')
+            ->orderBy('employee_lname')
             ->get();
         return $employees;
     }
@@ -212,6 +213,72 @@ class EmployeesController extends Controller
                 'message' => 'Success',
                 'user' => $user,
                 'logs' => $logs
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //UPLOAD USER BACKGROUND
+    public function uploadbackground(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'employee_id'  => 'required',
+            'image_path' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('image_path')) {
+                $file = $request->file('image_path');
+                $filename = $file->getClientOriginalName();
+                $path = ("backgroundimages");
+                $file_name = $path."/".$filename;
+                $file->move($path, $filename);
+            }
+            $bg_image = BackgroundImage::create([
+                'employee_id' => $request->employee_id,
+                'image_path' => $file_name,
+            ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Success', 
+                'userlog' => $bg_image
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Server Error', 
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //DELETING BACKGROUND IMAGE FROM DATABASE
+    public function removebackground(Request $request){
+        $validator = Validator::make($request->all(), [
+            'employee_id'  => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages(),
+            ]);
+        }
+        DB::beginTransaction();
+        try {
+            DB::table('background_images')
+                ->where('employee_id', '=', $request->employee_id)
+                ->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Background image removed', 
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

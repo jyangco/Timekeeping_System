@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import moment from "moment"
-import { Link, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import ReactToPrint from 'react-to-print'
 
 import http from '../components/Config'

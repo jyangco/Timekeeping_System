@@ -228,10 +228,10 @@ function PasswordChange(){
                         <div className="text-4xl font-sans font-bold pb-10"> Change Background </div>
                         {userDetails.background == null   ? 
                             <div className="contents">
-                                <form onSubmit={handleUploadImages} id="imageForm">
+                                <form encType="multipart/form-data" onSubmit={handleUploadImages}>
                                     <input
                                         type="file"
-                                        accept="image/jpeg, image/png, image/gif"
+                                        accept="image/jpeg, image/png, image/gif, image/jpg"
                                         onChange={handleFileChange}
                                     />
                                     {errorMessage && <p className="text-red-500">{errorMessage}</p>}

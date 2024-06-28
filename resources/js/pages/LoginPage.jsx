@@ -41,8 +41,9 @@ function LoginPage() {
             const token = res.data.token
             cookies.set('session_token', token, {
                 path: '/', 
-                secure: false, 
-                sameSite: 'strict' 
+                secure: true, 
+                sameSite: 'strict',
+                maxAge: 1800,
             })
             Swal.fire({
                 title: "Successfully Logged In",

@@ -13,17 +13,6 @@ class EmployeesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('employees')->insert([
-            [
-                'employee_id' => '185',
-                'employee_fname' => 'Jason',
-                'employee_minitial' => 'S',
-                'employee_lname' => 'Yangco',
-                'employee_suffix' => '',
-                'employee_division' => 'Finance and Administrative Division',
-                'employee_unit' => 'Human Resource Management Unit',
-                'schedule' => 'Tuesday',
-            ],
-        ]);
+        //
     }
 }

@@ -21,6 +21,7 @@ class EmployeesController extends Controller
     public function getallemployees(){
         $employees = DB::table('employees')
             ->orderBy('employee_lname')
+            ->where('employee_id', '!=', '000')
             ->get();
         return $employees;
     }

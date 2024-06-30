@@ -226,6 +226,7 @@ function PasswordChange(){
                     </div>
                     <div className="w-[50%] p-2 border-l-2 border-black">
                         <div className="text-4xl font-sans font-bold pb-10"> Change Background </div>
+                        <p className="text-xl"> note: make sure the image name has no white spaces(blanks) </p>
                         {userDetails.background == null   ? 
                             <div className="contents">
                                 <form encType="multipart/form-data" onSubmit={handleUploadImages}>

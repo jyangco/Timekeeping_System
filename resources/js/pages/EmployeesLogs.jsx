@@ -8,6 +8,39 @@ import Modal from "../components/Modal"
 import Loader from '../components/Loader'
 import ExportToCSV from "./ExportToCSV"
 
+const FileViewer = ({ filePath }) => {
+    const renderFileViewer = (path) => {
+    const fileExtension = path.split('.').pop().toLowerCase()
+    const displayableFileTypes = ['pdf']
+        if (displayableFileTypes.includes(fileExtension)) {
+            return (
+                <iframe 
+                    className='h-[85vh] w-full border-4 border-purplehaze' 
+                    src={path}
+                />
+            )
+        } else {
+            return (
+                <div className="text-center relative">
+                    <div className="absolute top-48">
+                        <p className="text-5xl py-2">File downloaded. Please check your downloads folder.</p>
+                        <p className="text-xl py-2">note: this file can only be downloaded once per click if you want to redownload the file again, please refresh the page and proceed to download again.</p>
+                        <iframe 
+                            className='hidden'
+                            src={path} 
+                        />
+                    </div>
+                </div>
+            )
+        }
+    }
+    return (
+        <div>
+            {renderFileViewer(filePath)}
+        </div>
+    )
+}
+
 function EmployeesLogs(){
     const [ date_today, set_date_today ] = useState(moment(new Date()).format("YYYY-MM-DD"))
     const [ userLog, setUserLogs ] = useState([])
@@ -78,10 +111,7 @@ function EmployeesLogs(){
     return(
         <Layout>
             <Modal show={show} handleClose={closeModal}>
-                <iframe 
-                    className='h-[90vh] w-full border-4 border-purplehaze' 
-                    src={window.location.origin + "/" + file + '#toolbar=1&view=fit'} 
-                />
+                <FileViewer filePath={file} />
             </Modal>
             <Modal show={showPrnt} handleClose={closeModalPrnt}>
                 <div className="flex justify-start">

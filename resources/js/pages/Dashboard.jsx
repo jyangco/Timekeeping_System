@@ -144,7 +144,7 @@ function Dashboard() {
 
     return (
         <Layout>
-            <button className="absolute top-20 bg-white m-3 p-3 rounded-3xl font-bold" onClick={toggleBackgroundVisibility}>
+            <button className="absolute top-[70px] bg-white m-3 p-3 rounded-3xl font-bold" onClick={toggleBackgroundVisibility}>
                 {showbg ? <span> Show Dashboard </span> : <span> Hide Dashboard </span> }
             </button>
             <div className={`${showbg ? "invisible" : "visible"} container-box mt-20 overflow-auto max-h-[80vh] w-[85%] mx-auto p-5`}>
